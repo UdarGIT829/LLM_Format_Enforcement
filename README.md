@@ -12,5 +12,6 @@ Currently restricted to Huggingface Transformers pipeline.
 
 ## Future work
 
+- Screenshots of working functionality
 - TinyLlama finetuning pipeline using JSON schema 
 - Generation of artificial datasets using online LLM's (such as ChatGPT, Mistral, Copilot, etc.)
