@@ -9,3 +9,8 @@ Currently restricted to Huggingface Transformers pipeline.
 - Support for Langchain, CTransformers, and llama.cpp
 - Dynamic JSON Schema generation using text-based prompting
 - Validation of JSON Schema
+
+## Future work
+
+- TinyLlama finetuning pipeline using JSON schema 
+- Generation of artificial datasets using online LLM's (such as ChatGPT, Mistral, Copilot, etc.)
