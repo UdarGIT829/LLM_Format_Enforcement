@@ -1,20 +1,18 @@
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from typing import Tuple, Optional, Union, List
 import pandas as pd
 from lmformatenforcer import JsonSchemaParser, CharacterLevelParser, RegexParser, StringParser
 from lmformatenforcer.integrations.transformers import generate_enforced, build_token_enforcer_tokenizer_data
 
 from pydantic import BaseModel
-from typing import List
+from typing import Tuple, Optional, Union, List
 
 import json
 
-from utils import get_prompt, extract_json_objects
+from utils import get_prompt, extract_json_objects, test_cuda, display_header, display_content
 
 StringOrManyStrings = Union[str, List[str]]
-
 
 def run(message: StringOrManyStrings,
         system_prompt: str,
@@ -75,21 +73,12 @@ def run(message: StringOrManyStrings,
         enforced_scores = None
     return string_outputs if is_multi_message else string_outputs[0], enforced_scores
 
-def display_header(text):
-    # Using ANSI escape codes to apply bold style in the console
-    print(f'\033[1m{text}\033[0m')
-
-def display_content(text):
-    # Print the text within a simple box for clarity, mimicking the Markdown code block style
-    print(f'```\n{text.strip()}\n```')
-
-
 
 model_id = "solidrust/Hermes-2-Pro-Llama-3-8B-AWQ"
 
 device = 'cuda'
 
-if torch.cuda.is_available():
+if test_cuda():
     model = AutoModelForCausalLM.from_pretrained(model_id, device_map='auto')
 else:
     raise Exception('GPU not available')
@@ -129,3 +118,4 @@ except Exception as err:
     myJSON_output = json.loads(extract_json_objects(result.strip())[-1])
 
 print(myJSON_output)
+print(enforced_scores)
