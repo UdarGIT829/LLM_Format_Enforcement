@@ -11,7 +11,7 @@ from typing import List
 
 import json
 
-from utils import get_prompt
+from utils import get_prompt, extract_json_objects
 
 StringOrManyStrings = Union[str, List[str]]
 
@@ -75,12 +75,6 @@ def run(message: StringOrManyStrings,
         enforced_scores = None
     return string_outputs if is_multi_message else string_outputs[0], enforced_scores
 
-# def display_header(text):
-#     display(Markdown(f'**{text}**'))
-
-# def display_content(text):
-#     display(Markdown(f'```\n{text}\n```'))
-
 def display_header(text):
     # Using ANSI escape codes to apply bold style in the console
     print(f'\033[1m{text}\033[0m')
@@ -91,7 +85,8 @@ def display_content(text):
 
 
 
-model_id = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+model_id = "solidrust/Hermes-2-Pro-Llama-3-8B-AWQ"
+
 device = 'cuda'
 
 if torch.cuda.is_available():
@@ -107,26 +102,30 @@ if tokenizer.pad_token_id is None:
 tokenizer_data = build_token_enforcer_tokenizer_data(tokenizer)
 
 DEFAULT_SYSTEM_PROMPT = """\
-You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature.\n\nIf a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don't know the answer to a question, please don't share false information.\
+You are a helpful assistant to a storyteller. Describe only the following situation, Do not describe anything outside the provided information:\n\
 """
-DEFAULT_MAX_NEW_TOKENS = 100
+DEFAULT_MAX_NEW_TOKENS = 150
 
 class AnswerFormat(BaseModel):
-    first_name: str
-    last_name: str
-    year_of_birth: int
-    num_seasons_in_nba: int
+    situation: str
+    
 
-question = 'Please give me information about Michael Jordan. You MUST answer using the following json schema: '
-question_with_schema = f'{question}{AnswerFormat.schema_json()}'
+question = """{'player_cosmetic_details': ['wet'], 'player_state_details': ['cold'], 'environment': 'wilderness, at a cave entrance with a small stream flowing in and the forest in the distance with a river flowing out', 'company': 'alone', 'danger_level': 'low'}\n\n    You MUST answer using the following json schema: """
+
+question_with_schema = f'{question}{AnswerFormat.model_json_schema()}'
 
 display_header("Question:")
 display_content(question_with_schema)
 
 display_header("Answer, With json schema enforcing:")
-result, enforced_scores = run(question_with_schema, system_prompt=DEFAULT_SYSTEM_PROMPT, max_new_tokens=DEFAULT_MAX_NEW_TOKENS, required_json_schema=AnswerFormat.schema())
+result, enforced_scores = run(question_with_schema, system_prompt=DEFAULT_SYSTEM_PROMPT,max_new_tokens=DEFAULT_MAX_NEW_TOKENS, required_json_schema=AnswerFormat.model_json_schema())
 display_content(result)
 
-myJSON_output = json.loads(result.strip())
+print("_="*9)
+try:
+    myJSON_output = json.loads(result.strip())
+except Exception as err:
+    print("Attempting JSON Extraction")
+    myJSON_output = json.loads(extract_json_objects(result.strip())[-1])
 
 print(myJSON_output)
