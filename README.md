@@ -4,6 +4,14 @@ Restrict LLM output to proper JSON formatting.
 
 Currently restricted to Huggingface Transformers pipeline.
 
+## Installation
+
+For installation please use 
+`
+pip install torch --index-url https://download.pytorch.org/whl/cu118
+pip install -r requirements.txt
+`
+
 ## Planned Features
 
 - Support for Langchain, CTransformers, and llama.cpp
