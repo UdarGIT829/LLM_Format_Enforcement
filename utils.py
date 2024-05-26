@@ -1,3 +1,11 @@
+import re
+
+def extract_json_objects(text):
+    # Regular expression to find all occurrences of {...}
+    pattern = r'\{[^{}]*\}'
+    results = re.findall(pattern, text)
+    return results
+
 def get_prompt(message: str, system_prompt: str) -> str:
     texts = [f'<s>[INST] <<SYS>>\n{system_prompt}\n<</SYS>>\n\n']
     # The first user input is _not_ stripped
