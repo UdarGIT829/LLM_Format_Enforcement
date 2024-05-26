@@ -7,10 +7,10 @@ Currently restricted to Huggingface Transformers pipeline.
 ## Installation
 
 For installation please use 
-`
+```ps
 pip install torch --index-url https://download.pytorch.org/whl/cu118
 pip install -r requirements.txt
-`
+```
 
 ## Planned Features
 
