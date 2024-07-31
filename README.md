@@ -4,6 +4,8 @@ Restrict LLM output to proper JSON formatting.
 
 Currently restricted to Huggingface Transformers pipeline.
 
+Wrapper for `noamgat/lm-format-enforcer` designed for function calling.
+
 ## Installation
 
 For installation please use 
